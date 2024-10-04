@@ -47,8 +47,8 @@ int main() {
 	
 	Game MarioGame(width, height, FreshLoger);
 
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
+	double deltaTime = 0.0f;
+	double lastFrame = 0.0f;
 
 	while (!glfwWindowShouldClose(GLWindow)) 
 	{
