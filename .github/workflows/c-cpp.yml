@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Solution
         run: |
-          msbuild MarioCloneGL.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="$(SolutionDir)Dependencies\OpenGL\includes;$(SolutionDir)Dependencies\glm"
+          msbuild MarioCloneGL.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="Dependencies\OpenGL\includes;Dependencies\glm"
 
       - name: Archive Build Artifacts
         if: success()
