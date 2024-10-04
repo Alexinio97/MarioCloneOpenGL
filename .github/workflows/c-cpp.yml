@@ -20,7 +20,8 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Build Solution
-        run: msbuild MarioCloneGL.sln /p:Configuration=Release
+        run: |
+          msbuild MarioCloneGL.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="$(SolutionDir)Dependencies\OpenGL\includes;$(SolutionDir)Dependencies\glm"
 
       - name: Archive Build Artifacts
         if: success()
