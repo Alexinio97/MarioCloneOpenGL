@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <sstream>
 #include "Game.h"
-
+/*Name of the entry file needs to match the one in cmake in order to get the cmakelists view in visual studio*/
 
 void CalculateFPS(GLFWwindow* window);
 
