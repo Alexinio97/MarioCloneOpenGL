@@ -15,7 +15,7 @@ set(SOURCES
     Game.cpp
     Ground.cpp
     Logger.cpp
-    main.cpp
+    MarioCloneGL.cpp
     Mario.cpp
     ResourceManager.cpp
     Shader.cpp
@@ -35,10 +35,13 @@ set (HEADERS
 
 add_executable(MarioCloneGL ${SOURCES} ${HEADERS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/includes
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib    
 )
 
 find_package(OpenGL REQUIRED)
