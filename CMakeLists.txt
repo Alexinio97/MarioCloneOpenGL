@@ -12,26 +12,25 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
-    Game.cpp
-    Ground.cpp
-    Logger.cpp
-    MarioCloneGL.cpp
-    Mario.cpp
-    ResourceManager.cpp
-    Shader.cpp
-    glad.c
-    )
+    src/Game.cpp
+    src/World/Ground.cpp
+    src/Logger.cpp
+    src/MarioCloneGL.cpp
+    src/Characters/Mario.cpp
+    src/ResourceManager.cpp
+    src/Shader.cpp
+    src/glad.c
+     "src/Characters/Mushroom.cpp")
 
 set (HEADERS
-    Game.h
-    GameObject.h
-    Ground.h
-    Logger.h
-    Main.h
-    Mario.h
-    ResourceManager.h
-    Shader.h
-    )
+    includes/Game.h
+    includes/GameObject.h
+    includes/World/Ground.h
+    includes/Logger.h
+    includes/Characters/Mario.h
+    includes/ResourceManager.h
+    includes/Shader.h
+     "includes/Characters/Mushroom.h")
 
 add_executable(MarioCloneGL ${SOURCES} ${HEADERS})
 

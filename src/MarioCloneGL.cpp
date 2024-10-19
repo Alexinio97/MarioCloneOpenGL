@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include "Logger.h"
+#include "includes/Logger.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <sstream>
-#include "Game.h"
+#include "includes/Game.h"
 /*Name of the entry file needs to match the one in cmake in order to get the cmakelists view in visual studio*/
 
 void CalculateFPS(GLFWwindow* window);
