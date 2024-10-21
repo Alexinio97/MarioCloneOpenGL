@@ -20,7 +20,7 @@ set(SOURCES
     src/ResourceManager.cpp
     src/Shader.cpp
     src/glad.c
-     "src/Characters/Mushroom.cpp")
+     src/Characters/Mushroom.cpp)
 
 set (HEADERS
     includes/Game.h
@@ -30,9 +30,18 @@ set (HEADERS
     includes/Characters/Mario.h
     includes/ResourceManager.h
     includes/Shader.h
-     "includes/Characters/Mushroom.h")
+     includes/Characters/Mushroom.h)
 
-add_executable(MarioCloneGL ${SOURCES} ${HEADERS})
+add_executable(MarioCloneGL 
+    ${SOURCES} ${HEADERS}
+    Resources/Shaders/sprite.frag.glsl
+    Resources/Shaders/sprite.vert.glsl
+)
+
+set(RESOURCE_FILES
+    Resources/Shaders/sprite.frag.glsl
+    Resources/Shaders/sprite.vert.glsl
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}

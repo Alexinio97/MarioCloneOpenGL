@@ -9,6 +9,15 @@
 /*Name of the entry file needs to match the one in cmake in order to get the cmakelists view in visual studio*/
 
 void CalculateFPS(GLFWwindow* window);
+void GLAPIENTRY OpenGLDebugMessageCallback(
+	GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam
+);
 
 int main() {
 	Logger FreshLoger{};
@@ -44,6 +53,7 @@ int main() {
 		FreshLoger.LogError("Failed to initialize GLAD");
 		return -1;
 	}
+	glDebugMessageCallback(OpenGLDebugMessageCallback, 0);
 	
 	Game MarioGame(width, height, FreshLoger);
 
@@ -64,6 +74,25 @@ int main() {
 		glfwSwapBuffers(GLWindow);
 	}
 	FreshLoger.LogInformation("Test log!");
+}
+
+void GLAPIENTRY OpenGLDebugMessageCallback(
+	GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam
+)
+{
+	std::cerr << "OpenGL Debug Message:\n";
+	std::cerr << "Source: " << source << "\n";
+	std::cerr << "Type: " << type << "\n";
+	std::cerr << "ID: " << id << "\n";
+	std::cerr << "Severity: " << severity << "\n";
+	std::cerr << "Message: " << message << "\n";
+	std::cerr << std::endl;
 }
 
 void CalculateFPS(GLFWwindow* window)
