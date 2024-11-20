@@ -43,6 +43,8 @@ add_executable(MarioCloneGL
 set(RESOURCE_FILES
     Resources/Shaders/sprite.frag.glsl
     Resources/Shaders/sprite.vert.glsl
+    Resources/Textures/Characters/mario.png
+    Resources/Textures/Characters/mushroom.png
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 

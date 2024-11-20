@@ -1,6 +1,5 @@
 #include "includes/Shader.h"
 #include <typeinfo>
-#include <glad/glad.h>
 #include <vector>
 
 Shader::Shader(Logger& shaderLogger)
