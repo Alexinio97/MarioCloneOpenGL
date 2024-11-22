@@ -23,26 +23,27 @@ void Shader::Compile(const char* vertexCode, const char* fragmentCode)
 		throw std::exception(errorMsg);
 	}
 
+	
 
-
-	glCreateShader(GL_VERTEX_SHADER);
+	m_VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(m_VertexShaderId, 1, &vertexCode, NULL);
 	glCompileShader(m_VertexShaderId);
 
 	CheckShaderCompilation(m_VertexShaderId);
 	
-	glCreateShader(GL_FRAGMENT_SHADER);
+	m_FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(m_FragmentShaderId, 1, &fragmentCode, NULL);
 	glCompileShader(m_FragmentShaderId);
 
 	CheckShaderCompilation(m_FragmentShaderId);
-
-	m_ProgramId = glCreateProgram();
+	
+	m_ProgramId = glCreateProgram();	
 	glAttachShader(m_ProgramId, m_VertexShaderId);
 	glAttachShader(m_ProgramId, m_FragmentShaderId);
 
 	// Link our program
 	glLinkProgram(m_ProgramId);
+	CheckProgramCompilation(m_ProgramId);
 }
 
 Shader::~Shader()
@@ -72,10 +73,10 @@ void Shader::CheckShaderCompilation(GLuint shader)
 
 void Shader::CheckProgramCompilation(GLuint programId) const
 {
-	GLint isLinked = 0;
+	GLint success = 0;
 
-	glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
-	if (isLinked == GL_FALSE)
+	glGetProgramiv(programId, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
 	{
 		GLint logSize = 0;
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logSize);

@@ -6,9 +6,11 @@
 #include <filesystem>
 
 Game::Game(int width, int height, Logger& logger)
-{
-	std::cout << "Current Working Directory: " << std::filesystem::current_path() << std::endl;
-	ResourceManager::LoadShader("sprite.vert.glsl", "sprite.frag.glsl", "basic");
+{	
+    ResourceManager::LoadShader("Resources/Shaders/sprite.vert.glsl",
+        "Resources/Shaders/sprite.frag.glsl",
+        "default");
+
 }
 
 void Game::OnUpdate(float deltaTime)

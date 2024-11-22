@@ -29,7 +29,7 @@ Shader ResourceManager::loadShaderFromFiles(const char* vertexShaderFile, const 
         std::stringstream vShaderStream, fShaderStream;
 
         vShaderStream << vertexFile.rdbuf();
-        fShaderStream << fShaderStream.rdbuf();
+        fShaderStream << fragmentFile.rdbuf();
 
         vertexCode = vShaderStream.str();
         fragmentcode = fShaderStream.str();

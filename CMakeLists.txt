@@ -34,10 +34,6 @@ set (HEADERS
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS}
-    Resources/Shaders/sprite.frag.glsl
-    Resources/Shaders/sprite.vert.glsl
-    Resources/Textures/Characters/mario.png
-    Resources/Textures/Characters/mushroom.png
 )
 
 set(RESOURCE_FILES
@@ -53,13 +49,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib    
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib   
+    OpenGL::GL
 )
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
 
-
-
-
-
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/Resources
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/Resources
+)
