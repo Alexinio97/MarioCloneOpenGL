@@ -20,7 +20,9 @@ set(SOURCES
     src/ResourceManager.cpp
     src/Shader.cpp
     src/glad.c
-     src/Characters/Mushroom.cpp)
+    src/Characters/Mushroom.cpp
+    src/Core/Texture.cpp
+)
 
 set (HEADERS
     includes/Game.h
@@ -30,7 +32,9 @@ set (HEADERS
     includes/Characters/Mario.h
     includes/ResourceManager.h
     includes/Shader.h
-     includes/Characters/Mushroom.h)
+    includes/Characters/Mushroom.h
+    includes/Core/Texture.h
+)
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS}
@@ -46,7 +50,10 @@ set(RESOURCE_FILES
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/stb
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE STB_IMAGE_IMPLEMENTATION)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib   
