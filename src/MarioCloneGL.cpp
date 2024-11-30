@@ -70,6 +70,7 @@ int main() {
 		glfwPollEvents();		
 		
 		MarioGame.OnUpdate(deltaTime);
+		MarioGame.OnRender(deltaTime);
 		glClear(GL_CLEAR_BUFFER);
 		glfwSwapBuffers(GLWindow);
 	}

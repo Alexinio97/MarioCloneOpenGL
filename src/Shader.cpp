@@ -23,8 +23,6 @@ void Shader::Compile(const char* vertexCode, const char* fragmentCode)
 		throw std::exception(errorMsg);
 	}
 
-	
-
 	m_VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(m_VertexShaderId, 1, &vertexCode, NULL);
 	glCompileShader(m_VertexShaderId);
@@ -44,6 +42,13 @@ void Shader::Compile(const char* vertexCode, const char* fragmentCode)
 	// Link our program
 	glLinkProgram(m_ProgramId);
 	CheckProgramCompilation(m_ProgramId);
+	glDeleteShader(m_VertexShaderId);
+	glDeleteShader(m_FragmentShaderId);
+}
+
+void Shader::Use()
+{
+	glUseProgram(m_ProgramId);
 }
 
 Shader::~Shader()

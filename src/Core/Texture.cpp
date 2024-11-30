@@ -1,21 +1,19 @@
 #include "includes/Core/Texture.h"
 #include "stb/stb_image.h"
-#include <glad/glad.h>
 
-Texture2D::Texture2D()
+Texture2D::Texture2D(const char* path, Logger& textureLogger)
+	: m_Path(path), m_TextureLogger(textureLogger)
 {
 }
 
 Texture2D::~Texture2D()
-{
-	delete TextureLogger;
+{	
 }
 
-void Texture2D::GenerateTexture(const char* texturePath)
-{	
-	GLuint textureId;
-	glGenTextures(1, &textureId);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+void Texture2D::GenerateTexture()
+{		
+	glGenTextures(1, &m_TextureId);
+	glBindTexture(GL_TEXTURE_2D, m_TextureId);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -23,14 +21,14 @@ void Texture2D::GenerateTexture(const char* texturePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
-	auto textureData = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+	auto textureData = stbi_load(m_Path, &width, &height, &nrChannels, 0);
 	if (textureData)
 	{
-		glTexImage2D(textureId, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
-		glGenerateMipmap(textureId);
+		glTexImage2D(m_TextureId, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+		glGenerateMipmap(m_TextureId);
 	}
 	else {
-		TextureLogger->LogError("Failed to load texture!", "Texture2D");
+		m_TextureLogger.LogError("Failed to load texture!", "Texture2D");
 	}
 	
 

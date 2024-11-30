@@ -9,6 +9,7 @@ public:
 	Shader() = default;
 	Shader(Logger& shaderLogger);
 	void Compile(const char* vertexCode, const char* fragmentCode);
+	void Use();
 
 	~Shader();
 private:

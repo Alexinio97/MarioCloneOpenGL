@@ -22,6 +22,7 @@ set(SOURCES
     src/glad.c
     src/Characters/Mushroom.cpp
     src/Core/Texture.cpp
+    src/Core/Renderer.cpp
 )
 
 set (HEADERS
@@ -34,6 +35,7 @@ set (HEADERS
     includes/Shader.h
     includes/Characters/Mushroom.h
     includes/Core/Texture.h
+    includes/Core/Renderer.h
 )
 
 add_executable(MarioCloneGL 

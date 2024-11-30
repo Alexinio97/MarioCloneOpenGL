@@ -4,6 +4,7 @@
 #include <fstream>
 
 std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
 
 void ResourceManager::LoadShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* shaderName)
 {
@@ -14,6 +15,11 @@ void ResourceManager::LoadShader(const char* vertexShaderFile, const char* fragm
 Shader& ResourceManager::GetShader(const char* shaderName)
 {
     return Shaders[shaderName];
+}
+
+Texture2D& ResourceManager::GetTexture(const char* textureName)
+{
+    return Textures[textureName];
 }
 
 Shader ResourceManager::loadShaderFromFiles(const char* vertexShaderFile, const char* fragmentShaderFile)
@@ -48,4 +54,12 @@ Shader ResourceManager::loadShaderFromFiles(const char* vertexShaderFile, const 
         shaderLogger.LogError("Could not read files!", ex);
         throw;
     }
+}
+
+void ResourceManager::LoadTexture(const char* textureFile, const char* name)
+{
+    Logger ResourceLogger{};
+    Texture2D newTexture(textureFile, ResourceLogger);
+
+    newTexture.GenerateTexture();
 }

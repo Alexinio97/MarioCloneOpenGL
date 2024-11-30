@@ -1,5 +1,6 @@
 #pragma once
 #include "Logger.h"
+#include "Characters/Mario.h"
 class Game
 {
 public:
@@ -7,7 +8,10 @@ public:
 
 	void OnUpdate(float deltaTime);
 
+	void OnRender(float deltaTime);
+
 protected:
-	Logger* GameLogger;
+	Logger* m_GameLogger;
+	Mario* m_Player;
 };
 
