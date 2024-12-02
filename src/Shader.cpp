@@ -1,6 +1,10 @@
+#pragma once
+
 #include "includes/Shader.h"
 #include <typeinfo>
 #include <vector>
+#include "includes/Logger.h"
+#include <stdexcept>
 
 Shader::Shader(Logger& shaderLogger)
 	: m_ShaderLogger(shaderLogger)
@@ -51,11 +55,16 @@ void Shader::Use()
 	glUseProgram(m_ProgramId);
 }
 
-Shader::~Shader()
+void Shader::SetInteger(const char* name, int value)
 {
-	glDetachShader(m_ProgramId, m_VertexShaderId);
-	glDetachShader(m_ProgramId, m_FragmentShaderId);
-	glDeleteProgram(m_ProgramId);
+	Use();
+	glUniform1i(glGetUniformLocation(m_ProgramId, name), value);
+}
+
+void Shader::SetVector3(const char* name, glm::vec3 value)
+{
+	Use();
+	glUniform3f(glGetUniformLocation(m_ProgramId, name), value.x, value.y, value.z);
 }
 
 void Shader::CheckShaderCompilation(GLuint shader)
@@ -91,6 +100,7 @@ void Shader::CheckProgramCompilation(GLuint programId) const
 		glDeleteProgram(programId);
 		glDeleteShader(m_VertexShaderId);
 		glDeleteShader(m_FragmentShaderId);
-		throw std::exception("Failed program compilation: " + programId);
+		std::string errorMessage = "Failed shader compilation: " + std::string(logBuffer.begin(), logBuffer.end());
+		throw std::runtime_error("Failed program compilation: " + errorMessage);
 	}
 }

@@ -21,6 +21,6 @@ public:
 private:
 	ResourceManager() = default;
 
-	static auto loadShaderFromFiles(const char* vertexShaderFile, const char* fragmentShaderFile) -> Shader;
+	static auto loadShaderFromFiles(const char* vertexShaderFile, const char* fragmentShaderFile) -> Shader&;
 };
 

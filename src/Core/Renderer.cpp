@@ -1,9 +1,10 @@
+#pragma once
+
 #include <includes/Core/Renderer.h>
 #include <iostream>
-#include <includes/Core/Texture.h>
 
-Renderer::Renderer()
-    : m_VAO(0), m_VBO(0), m_EBO(0)
+Renderer::Renderer(Shader& shader)
+    : m_VAO(0), m_VBO(0), m_EBO(0), m_Shader(shader)
 {
     SetupQuad();
 }
@@ -18,13 +19,12 @@ Renderer::~Renderer()
 void Renderer::SetupQuad()
 {
     float vertices[] = {
-        // Positions       // Colors        // Texture Coords
-         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Top right
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom left
-        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // Top left 
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
     };
-
     unsigned int indices[] = {
         0, 1, 3,
         1, 2, 3
@@ -42,29 +42,22 @@ void Renderer::SetupQuad()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Position attribute
+    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    // Color attribute
+    // color attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    // Texture coordinate attribute
+    // texture coord attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
 void Renderer::Render(const Texture2D& texture)
-{
-    glBindVertexArray(m_VAO);
+{        
+    glBindTexture(GL_TEXTURE_2D, texture.GetTextureId()); 
+    m_Shader.Use();
 
-    glBindTexture(GL_TEXTURE_2D, texture.GetTextureId());
-
+    glBindVertexArray(m_VAO);        
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    glBindVertexArray(0);
 }

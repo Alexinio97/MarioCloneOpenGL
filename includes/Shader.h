@@ -1,7 +1,7 @@
 #pragma once
 #include "Logger.h"
+#include <glm.hpp>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 class Shader
 {
@@ -11,7 +11,9 @@ public:
 	void Compile(const char* vertexCode, const char* fragmentCode);
 	void Use();
 
-	~Shader();
+	void SetInteger(const char* name, int value);
+	void SetVector3(const char* name, glm::vec3 value);
+	
 private:
 	void CheckShaderCompilation(GLuint shader);
 	void CheckProgramCompilation(GLuint programId) const;

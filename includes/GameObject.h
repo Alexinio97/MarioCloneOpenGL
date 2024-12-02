@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm/glm.hpp>
+#include <glm.hpp>
 
 class Renderer;
 

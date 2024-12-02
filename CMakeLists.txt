@@ -11,6 +11,8 @@ project("MarioCloneGL")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+
 set(SOURCES
     src/Game.cpp
     src/World/Ground.cpp
@@ -23,6 +25,7 @@ set(SOURCES
     src/Characters/Mushroom.cpp
     src/Core/Texture.cpp
     src/Core/Renderer.cpp
+    src/Core/TextRenderer.cpp
 )
 
 set (HEADERS
@@ -40,30 +43,37 @@ set (HEADERS
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS}
-)
+ "includes/Core/TextRenderer.h")
 
 set(RESOURCE_FILES
     Resources/Shaders/sprite.frag.glsl
     Resources/Shaders/sprite.vert.glsl
+    Resources/Shaders/text.vert.glsl
+    Resources/Shaders/text.frag.glsl
     Resources/Textures/Characters/mario.png
     Resources/Textures/Characters/mushroom.png
+    Resources/Textures/Characters/ballTexture.png
+    Resources/Fonts/elsie/Elsie-Regular.otf
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/includes    
     ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/stb
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE STB_IMAGE_IMPLEMENTATION)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib   
+    ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OpenGL/lib/glfw3.lib    
     OpenGL::GL
 )
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
+find_package(Freetype REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
+    Freetype::Freetype
+)
 
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD

@@ -8,7 +8,7 @@ std::map<std::string, Texture2D> ResourceManager::Textures;
 
 void ResourceManager::LoadShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* shaderName)
 {
-    auto shader = loadShaderFromFiles(vertexShaderFile, fragmentShaderFile);
+    Shader& shader = loadShaderFromFiles(vertexShaderFile, fragmentShaderFile);
     Shaders[shaderName] = shader;    
 }
 
@@ -22,7 +22,7 @@ Texture2D& ResourceManager::GetTexture(const char* textureName)
     return Textures[textureName];
 }
 
-Shader ResourceManager::loadShaderFromFiles(const char* vertexShaderFile, const char* fragmentShaderFile)
+Shader& ResourceManager::loadShaderFromFiles(const char* vertexShaderFile, const char* fragmentShaderFile)
 {
     Logger ResourceLogger{};
     std::string vertexCode;
@@ -62,4 +62,6 @@ void ResourceManager::LoadTexture(const char* textureFile, const char* name)
     Texture2D newTexture(textureFile, ResourceLogger);
 
     newTexture.GenerateTexture();
+
+    Textures[name] = newTexture;
 }

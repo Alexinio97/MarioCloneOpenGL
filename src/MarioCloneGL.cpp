@@ -36,6 +36,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 
+
 	GLFWwindow* GLWindow;
 	GLWindow = glfwCreateWindow(width, height, "Mario", NULL, NULL);
 
@@ -53,9 +54,15 @@ int main() {
 		FreshLoger.LogError("Failed to initialize GLAD");
 		return -1;
 	}
-	glDebugMessageCallback(OpenGLDebugMessageCallback, 0);
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDebugMessageCallback(OpenGLDebugMessageCallback, __FILE__);
 	
 	Game MarioGame(width, height, FreshLoger);
+
+	glViewport(0, 0, width, height);
 
 	double deltaTime = 0.0f;
 	double lastFrame = 0.0f;
@@ -66,15 +73,18 @@ int main() {
 		auto currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-				
-		glfwPollEvents();		
-		
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 		MarioGame.OnUpdate(deltaTime);
-		MarioGame.OnRender(deltaTime);
-		glClear(GL_CLEAR_BUFFER);
+		MarioGame.OnRender(deltaTime);		
 		glfwSwapBuffers(GLWindow);
+		glfwPollEvents();
 	}
 	FreshLoger.LogInformation("Test log!");
+
+	glfwTerminate();
+	return 0;
 }
 
 void GLAPIENTRY OpenGLDebugMessageCallback(
@@ -93,6 +103,11 @@ void GLAPIENTRY OpenGLDebugMessageCallback(
 	std::cerr << "ID: " << id << "\n";
 	std::cerr << "Severity: " << severity << "\n";
 	std::cerr << "Message: " << message << "\n";
+
+	if (userParam) {
+		const char* file = static_cast<const char*>(userParam);
+		std::cerr << "Triggered by: " << file << "\n";
+	}
 	std::cerr << std::endl;
 }
 
