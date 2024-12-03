@@ -24,7 +24,7 @@ TextRenderer::TextRenderer(const std::string& font, GLuint fontSize, Shader& sha
 
 void TextRenderer::RenderText(const std::string& text, float x, float y, float scale, glm::vec3 color)
 {
-    TextShader.Use();
+    TextShader.Use();    
     TextShader.SetVector3("textColor", color);
 
     glActiveTexture(GL_TEXTURE0);

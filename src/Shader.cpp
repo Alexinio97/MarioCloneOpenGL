@@ -5,6 +5,7 @@
 #include <vector>
 #include "includes/Logger.h"
 #include <stdexcept>
+#include <glm/glm/gtc/type_ptr.hpp>
 
 Shader::Shader(Logger& shaderLogger)
 	: m_ShaderLogger(shaderLogger)
@@ -65,6 +66,12 @@ void Shader::SetVector3(const char* name, glm::vec3 value)
 {
 	Use();
 	glUniform3f(glGetUniformLocation(m_ProgramId, name), value.x, value.y, value.z);
+}
+
+void Shader::SetMatrix4(const char* name, glm::mat4 value)
+{
+	Use();
+	glUniformMatrix4fv(glGetUniformLocation(m_ProgramId, name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::CheckShaderCompilation(GLuint shader)

@@ -1,7 +1,8 @@
 #pragma once
 #include "Logger.h"
-#include <glm.hpp>
+#include <glm/glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm/gtc/matrix_transform.hpp>
 
 class Shader
 {
@@ -13,6 +14,7 @@ public:
 
 	void SetInteger(const char* name, int value);
 	void SetVector3(const char* name, glm::vec3 value);
+	void SetMatrix4(const char* name, glm::mat4 value);
 	
 private:
 	void CheckShaderCompilation(GLuint shader);
