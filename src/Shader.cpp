@@ -88,7 +88,8 @@ void Shader::CheckShaderCompilation(GLuint shader)
 		glGetShaderInfoLog(shader, logSize, &logSize, &logBuffer[0]);
 
 		glDeleteShader(shader);		
-		throw std::exception("Failed shader compilation: " + shader);
+		std::string errorLog(logBuffer.begin(), logBuffer.end());
+		throw std::runtime_error("Failed shader compilation: %s" + errorLog);
 	}
 }
 

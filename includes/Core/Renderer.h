@@ -10,9 +10,9 @@ public:
 	~Renderer();
 
 	void Render(const Texture2D& texture);
+	void RenderSprite(const Texture2D& texture, glm::vec2 position, glm::vec2 size, int spriteIndex, int spriteWidth, int spriteHeight);
 
 private:	
-
 	void SetupQuad();
 
 private:

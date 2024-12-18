@@ -11,6 +11,7 @@ public:
 	void OnRender(float deltaTime);
 
 protected:
+	int m_Width, m_Height;
 	Logger* m_GameLogger;
 	Mario* m_Player;
 };

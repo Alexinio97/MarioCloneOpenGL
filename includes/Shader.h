@@ -15,6 +15,8 @@ public:
 	void SetInteger(const char* name, int value);
 	void SetVector3(const char* name, glm::vec3 value);
 	void SetMatrix4(const char* name, glm::mat4 value);
+
+	inline GLuint GetProgramId() const { return m_ProgramId; }
 	
 private:
 	void CheckShaderCompilation(GLuint shader);

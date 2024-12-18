@@ -14,32 +14,33 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 set(SOURCES
-    src/Game.cpp
-    src/World/Ground.cpp
-    src/Logger.cpp
-    src/MarioCloneGL.cpp
-    src/Characters/Mario.cpp
-    src/ResourceManager.cpp
-    src/Shader.cpp
-    src/glad.c
-    src/Characters/Mushroom.cpp
-    src/Core/Texture.cpp
-    src/Core/Renderer.cpp
-    src/Core/TextRenderer.cpp
+    "src/Game.cpp"
+    "src/World/Ground.cpp"
+    "src/Logger.cpp"
+    "src/MarioCloneGL.cpp"
+    "src/Characters/Mario.cpp"
+    "src/ResourceManager.cpp"
+    "src/Shader.cpp"
+    "src/glad.c"
+    "src/Characters/Mushroom.cpp"
+    "src/Core/Texture.cpp"
+    "src/Core/Renderer.cpp"
+    "src/Core/TextRenderer.cpp"
+    "src/Input/Input.cpp"
 )
 
 set (HEADERS
-    includes/Game.h
-    includes/GameObject.h
-    includes/World/Ground.h
-    includes/Logger.h
-    includes/Characters/Mario.h
-    includes/ResourceManager.h
-    includes/Shader.h
-    includes/Characters/Mushroom.h
-    includes/Core/Texture.h
-    includes/Core/Renderer.h
-)
+    "includes/Game.h"
+    "includes/GameObject.h"
+    "includes/World/Ground.h"
+    "includes/Logger.h"
+    "includes/Characters/Mario.h"
+    "includes/ResourceManager.h"
+    "includes/Shader.h"
+    "includes/Characters/Mushroom.h"
+    "includes/Core/Texture.h"
+    "includes/Core/Renderer.h"
+    "includes/Input/Input.h")
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS}
@@ -71,8 +72,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
+find_package(box2d CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
     Freetype::Freetype
+    box2d::box2d
 )
 
 add_custom_command(
