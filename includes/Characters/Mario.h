@@ -1,9 +1,10 @@
 #pragma once
 
 #include "includes/Core/Texture.h"
-#include "includes/Core/Renderer.h"
 #include "includes/GameObject.h"
 #include <box2d/b2_body.h>
+#include <box2d/b2_world.h>
+#include "includes/Core/GameScene.h"
 
 enum AnimState {
 	Idle,
@@ -13,7 +14,7 @@ enum AnimState {
 class Mario : public GameObject
 {
 public:
-	Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlipped, AnimState animationState);
+	Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlipped, AnimState animationState, b2World& world, GameScene& scene);
 	~Mario();
 	
 	void OnUpdate(float deltaTime) override;
@@ -21,9 +22,10 @@ public:
 
 
 private:
-	b2BodyDef m_PhysicsBody;
+	b2Body* m_Body;
 	Texture2D m_Texture;
 	AnimState m_AnimationState;
+	GameScene* m_Scene;
 	bool m_IsFlipped;
 	float m_Speed;
 	bool m_IsDead;

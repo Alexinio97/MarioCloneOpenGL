@@ -27,6 +27,8 @@ set(SOURCES
     "src/Core/Renderer.cpp"
     "src/Core/TextRenderer.cpp"
     "src/Input/Input.cpp"
+    "src/Core/GameScene.cpp"
+    
 )
 
 set (HEADERS
@@ -40,11 +42,13 @@ set (HEADERS
     "includes/Characters/Mushroom.h"
     "includes/Core/Texture.h"
     "includes/Core/Renderer.h"
-    "includes/Input/Input.h")
+    "includes/Input/Input.h"
+    "includes/Core/GameScene.h"
+    "includes/Core/TextRenderer.h")
 
 add_executable(MarioCloneGL 
-    ${SOURCES} ${HEADERS}
- "includes/Core/TextRenderer.h")
+    ${SOURCES} ${HEADERS} 
+)
 
 set(RESOURCE_FILES
     Resources/Shaders/sprite.frag.glsl
@@ -54,6 +58,7 @@ set(RESOURCE_FILES
     Resources/Textures/Characters/mario.png
     Resources/Textures/Characters/mushroom.png
     Resources/Textures/Characters/ballTexture.png
+    Resources/Textures/World/Ground.png
     Resources/Fonts/elsie/Elsie-Regular.otf
 )
 

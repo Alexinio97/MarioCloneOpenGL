@@ -7,15 +7,21 @@
 #include "includes/Core/TextRenderer.h"
 #include <iostream>
 #include <filesystem>
-#include <includes/Input/Input.h>
+#include "includes/Input/Input.h"
 #include <GLFW/glfw3.h>
+#include "includes/Core/GameScene.h"
+#include "includes/Core/Renderer.h"
 
 Renderer* renderer;
 TextRenderer* textRenderer;
+GameScene* gameScene;
 
 Game::Game(int width, int height, Logger& logger)
     : m_GameLogger(&logger), m_Width(width), m_Height(height)
 {	
+    m_World = new b2World(b2Vec2(0, -5));
+    gameScene = new GameScene();
+
     ResourceManager::LoadShader("Resources/Shaders/sprite.vert.glsl",
         "Resources/Shaders/sprite.frag.glsl",
         "default");
@@ -36,21 +42,40 @@ Game::Game(int width, int height, Logger& logger)
     glm::mat4 viewMatrix = glm::mat4(1);
     ResourceManager::GetShader("default").SetMatrix4("projection", projection);
     ResourceManager::GetShader("default").SetMatrix4("view", viewMatrix);
-    m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle);
+    m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *gameScene);
     renderer = new Renderer(shader);
     textRenderer = new TextRenderer("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);
+    
+}
+
+Game::~Game()
+{
+    delete(m_Player);
+    delete(renderer);
+    delete(textRenderer);    
+    delete(m_World);
+
+    for (auto gameObject : gameScene->GetGameObjects())
+    {
+		gameScene->UnregisterGameObject(*gameObject);
+    }
+    delete(gameScene);
 }
 
 void Game::OnUpdate(float deltaTime)
 {	
-    m_Player->OnUpdate(deltaTime);
+    for (auto gameObject : gameScene->GetGameObjects())
+    {
+        gameObject->OnUpdate(deltaTime);
+    }
+
+    m_World->Step(deltaTime, 8, 3);
 }
 
 void Game::OnRender(float deltaTime)
 {    
-    m_Player->OnRender(deltaTime, *renderer);    
-    if(Input::GetKey(GLFW_KEY_A))
-        textRenderer->RenderText("A pressed", 10.0f, 30.0f + 0.5 * 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-    else
-        textRenderer->RenderText("0.5", 10.0f, 30.0f + 0.5 * 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    for(auto gameObject : gameScene->GetGameObjects())
+	{        
+		gameObject->OnRender(deltaTime, *renderer);        
+	}
 }
