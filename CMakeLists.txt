@@ -28,8 +28,8 @@ set(SOURCES
     "src/Core/TextRenderer.cpp"
     "src/Input/Input.cpp"
     "src/Core/GameScene.cpp"
-    
-)
+    "src/Core/Box2DRenderer.cpp"
+ )
 
 set (HEADERS
     "includes/Game.h"
@@ -44,7 +44,8 @@ set (HEADERS
     "includes/Core/Renderer.h"
     "includes/Input/Input.h"
     "includes/Core/GameScene.h"
-    "includes/Core/TextRenderer.h")
+    "includes/Core/TextRenderer.h" 
+    "includes/Core/Box2DRenderer.h")
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS} 

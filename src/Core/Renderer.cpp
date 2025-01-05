@@ -5,8 +5,7 @@
 
 Renderer::Renderer(Shader& shader)
     : m_VAO(0), m_VBO(0), m_EBO(0), m_Shader(shader)
-{
-    SetupQuad();
+{   
 }
 
 Renderer::~Renderer()
@@ -19,16 +18,16 @@ Renderer::~Renderer()
 void Renderer::SetupQuad()
 {
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        // positions        // colors          // texture coords
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom right
+       -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom left
+       -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top left
     };
     unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
+        0,1,3,
+        1,2,3
+    };;
 
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -47,13 +46,23 @@ void Renderer::SetupQuad()
     glEnableVertexAttribArray(0);
 }
 
-void Renderer::Render(const Texture2D& texture)
-{        
-    glBindTexture(GL_TEXTURE_2D, texture.GetTextureId()); 
+void Renderer::Render(const Texture2D& texture, glm::vec2 position, glm::vec2 size)
+{            
+    SetupQuad();
     m_Shader.Use();
 
-    glBindVertexArray(m_VAO);        
+    glm::mat4 model = glm::mat4(1.0f);
+
+    model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));  // when z = 40.0f, it is far outside the visible range of [-1.0f, 1.0f] texture was not displaying
+    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, glm::vec3(size, 0.0f));
+    m_Shader.SetMatrix4("model", model);
+    glActiveTexture(GL_TEXTURE0);    
+    glBindTexture(GL_TEXTURE_2D, texture.GetTextureId());
+
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void Renderer::RenderSprite(const Texture2D& texture, glm::vec2 position, glm::vec2 size, int spriteIndex, int spriteWidth, int spriteHeight)

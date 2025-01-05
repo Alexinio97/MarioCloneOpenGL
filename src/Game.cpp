@@ -2,7 +2,7 @@
 
 #include <typeinfo>
 #include "includes/Game.h"
-#include "includes/Shader.h""
+#include "includes/Shader.h"
 #include "includes/ResourceManager.h"
 #include "includes/Core/TextRenderer.h"
 #include <iostream>
@@ -11,16 +11,19 @@
 #include <GLFW/glfw3.h>
 #include "includes/Core/GameScene.h"
 #include "includes/Core/Renderer.h"
+#include "includes/World/Ground.h"
+#include "includes/Core/Box2DRenderer.h"
 
 Renderer* renderer;
 TextRenderer* textRenderer;
 GameScene* gameScene;
+Box2DRenderer* box2dRenderer;
 
 Game::Game(int width, int height, Logger& logger)
     : m_GameLogger(&logger), m_Width(width), m_Height(height)
 {	
     m_World = new b2World(b2Vec2(0, -5));
-    gameScene = new GameScene();
+    gameScene = new GameScene();    
 
     ResourceManager::LoadShader("Resources/Shaders/sprite.vert.glsl",
         "Resources/Shaders/sprite.frag.glsl",
@@ -28,10 +31,14 @@ Game::Game(int width, int height, Logger& logger)
     ResourceManager::LoadShader("Resources/Shaders/text.vert.glsl",
         "Resources/Shaders/text.frag.glsl",
         "text");
+    ResourceManager::LoadShader("Resources/Shaders/box-debug.vert.glsl", "Resources/Shaders/box-debug.frag.glsl", "box-debug");
 
     ResourceManager::LoadTexture("Resources/Textures/Characters/mario.png", "mario");
+    ResourceManager::LoadTexture("Resources/Textures/World/ground.png", "ground");
 
     Shader& shader = ResourceManager::GetShader("default");
+    Shader& box2dShader = ResourceManager::GetShader("box-debug");
+    box2dRenderer = new Box2DRenderer(box2dShader);
     shader.Use();
     shader.SetInteger("ourTexture", 0);
 
@@ -39,18 +46,21 @@ Game::Game(int width, int height, Logger& logger)
     textShader.Use();    
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
     textShader.SetMatrix4("projection", projection);
+    box2dShader.SetMatrix4("projection", projection);
+    box2dShader.SetVector3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+
     glm::mat4 viewMatrix = glm::mat4(1);
     ResourceManager::GetShader("default").SetMatrix4("projection", projection);
     ResourceManager::GetShader("default").SetMatrix4("view", viewMatrix);
-    m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *gameScene);
+    m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *gameScene, *box2dRenderer);
+    auto ground = new Ground(glm::vec2(m_Width / 3, m_Height / 3), glm::vec2(60.0f, 60.0f), 10, ResourceManager::GetTexture("ground"), *m_World, *gameScene, *box2dRenderer);
     renderer = new Renderer(shader);
     textRenderer = new TextRenderer("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);
     
 }
 
 Game::~Game()
-{
-    delete(m_Player);
+{  
     delete(renderer);
     delete(textRenderer);    
     delete(m_World);
@@ -58,8 +68,9 @@ Game::~Game()
     for (auto gameObject : gameScene->GetGameObjects())
     {
 		gameScene->UnregisterGameObject(*gameObject);
-    }
+    }    
     delete(gameScene);
+    delete(box2dRenderer);
 }
 
 void Game::OnUpdate(float deltaTime)
