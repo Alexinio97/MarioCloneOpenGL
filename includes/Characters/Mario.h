@@ -9,7 +9,8 @@
 
 enum AnimState {
 	Idle,
-	Running
+	Running,
+	Jumping
 };
 
 class Mario : public GameObject
@@ -19,8 +20,10 @@ public:
 	~Mario();
 	
 	void OnUpdate(float deltaTime) override;
-	void OnRender(float deltaTime, Renderer& renderer) override;
+	void OnRender(float deltaTime, Renderer& renderer) override;	
 
+private:
+	void SetAnimState();
 
 private:
 	b2Body* m_Body;
@@ -32,5 +35,11 @@ private:
 	bool m_IsFlipped;
 	float m_Speed;
 	bool m_IsDead;
+	bool m_IsRight;
+	bool m_IsJumping;
+	bool m_IsRunning;
+	int m_AnimIndex;
+	float m_AnimTimer;
+	float m_AnimSpeed;
 };
 
