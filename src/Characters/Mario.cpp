@@ -13,7 +13,7 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 {
 	m_Position = position;
 	m_Size = size;
-	m_Speed = 60.0f;
+	m_Speed = 1000.0f;
 	m_IsDead = false;
 
 	b2BodyDef bodyDef;
@@ -46,30 +46,31 @@ Mario::~Mario()
 {	
 }
 
+// deltaTime is useful for physics-based acceleration (+=), but for constant speed, it's unnecessary.
 void Mario::OnUpdate(float deltaTime)
 {
 	m_Position = { m_Body->GetPosition().x, m_Body->GetPosition().y };
 	b2Vec2 vel = m_Body->GetLinearVelocity();
 
+	m_AnimationState = AnimState::Idle;
 
 	if (Input::GetKey(GLFW_KEY_A))
 	{
-		vel.x = -90;
+		vel.x = -m_Speed;
 		m_IsRight = false;
-		m_IsRunning = true;		
+		m_AnimationState = AnimState::Running;
 	}
 
 	if (Input::GetKey(GLFW_KEY_D))
 	{
 		m_IsRight = true;
-		m_IsRunning = true;
-		vel.x = 90;
+		m_AnimationState = AnimState::Running;
+		vel.x = m_Speed;
 	}
 
 	if (Input::GetKey(GLFW_KEY_SPACE))
 	{
-		m_IsJumping = true;
-		m_IsRunning = false;
+		m_AnimationState = AnimState::Jumping;
 		vel.y = 90;
 	}	
 
@@ -96,35 +97,34 @@ void Mario::OnRender(float deltaTime, Renderer& renderer)
 
 	m_Box2dRenderer->DrawPolygon(transformedVertices.data(), m_BodyShape->m_count, b2Color(1.0f, 0.0f, 0.0f));
 
-	if (m_AnimationState == AnimState::Idle)
-	{
-		renderer.RenderSprite(m_Texture, m_Position, m_Size, m_AnimIndex, 200, 200);
-		return;
-	}
+	// Flip sprite without shifting its position
+	glm::vec2 renderPos = m_Position;
+	float flipX = m_IsRight ? 1.0f : -1.0f;
 
-	std::cout << "Anim index: " << m_AnimIndex << std::endl;
-	renderer.RenderSprite(m_Texture, m_Position, m_Size, m_AnimIndex, 200, 200);
+	if (!m_IsRight) // Shift position to compensate for mirroring
+	{
+		renderPos.x += m_Size.x;
+	}
+		
+	renderer.RenderSprite(m_Texture, renderPos, glm::vec2(m_Size.x * flipX, m_Size.y), m_AnimIndex, 200, 200);
 }
 
 void Mario::SetAnimState()
 { 
-	if (m_IsRunning)
+	switch (m_AnimationState)
 	{
-		m_AnimIndex = (m_AnimIndex + 1) % 6;
-		m_AnimationState = AnimState::Running;
-		return;
-	}
+	case AnimState::Jumping:
+		m_AnimIndex = 1;  // Fixed jump sprite
+		break;
 
-	if (m_IsJumping)
-	{
-		m_AnimIndex = 1;
-		m_AnimationState = AnimState::Jumping;
-		return;
-	}
-	
-	if (m_AnimationState != AnimState::Idle)
-	{
-		m_AnimIndex = 0;
-		m_AnimationState = AnimState::Idle;
+	case AnimState::Running:
+		// Loop through sprites 2-4
+		m_AnimIndex = (m_AnimIndex < 2 || m_AnimIndex >= 4) ? 2 : m_AnimIndex + 1;
+		break;
+
+	case AnimState::Idle:
+	default:
+		m_AnimIndex = 0;  // Idle sprite
+		break;
 	}
 }

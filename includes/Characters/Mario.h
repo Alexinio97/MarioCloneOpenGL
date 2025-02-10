@@ -36,8 +36,6 @@ private:
 	float m_Speed;
 	bool m_IsDead;
 	bool m_IsRight;
-	bool m_IsJumping;
-	bool m_IsRunning;
 	int m_AnimIndex;
 	float m_AnimTimer;
 	float m_AnimSpeed;
