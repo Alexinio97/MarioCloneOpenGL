@@ -13,12 +13,15 @@
 #include "includes/Core/Renderer.h"
 #include "includes/World/Ground.h"
 #include "includes/Core/Box2DRenderer.h"
+#include "includes/Characters/Owl.h"
+#include <includes/World/LevelManager.h>
 
 Renderer* renderer;
 TextRenderer* textRenderer;
 GameScene* gameScene;
 Box2DRenderer* box2dRenderer;
-
+LevelManager* levelManager;
+ 
 Game::Game(int width, int height, Logger& logger)
     : m_GameLogger(&logger), m_Width(width), m_Height(height)
 {	
@@ -33,8 +36,10 @@ Game::Game(int width, int height, Logger& logger)
         "text");
     ResourceManager::LoadShader("Resources/Shaders/box-debug.vert.glsl", "Resources/Shaders/box-debug.frag.glsl", "box-debug");
 
+    // Load Textures
     ResourceManager::LoadTexture("Resources/Textures/Characters/mario.png", "mario");
     ResourceManager::LoadTexture("Resources/Textures/World/ground.png", "ground");
+	ResourceManager::LoadTexture("Resources/Textures/Characters/owl.png", "owl");
 
     Shader& shader = ResourceManager::GetShader("default");
     Shader& box2dShader = ResourceManager::GetShader("box-debug");
@@ -53,10 +58,14 @@ Game::Game(int width, int height, Logger& logger)
     ResourceManager::GetShader("default").SetMatrix4("projection", projection);
     ResourceManager::GetShader("default").SetMatrix4("view", viewMatrix);
     m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *gameScene, *box2dRenderer);
-    auto ground = new Ground(glm::vec2(m_Width / 3, m_Height / 3), glm::vec2(60.0f, 60.0f), 10, ResourceManager::GetTexture("ground"), *m_World, *gameScene, *box2dRenderer);
+
+	auto mushroom = new Owl(ResourceManager::GetTexture("owl"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70, 70.0f), *m_World, *gameScene, *box2dRenderer);    
     renderer = new Renderer(shader);
-    textRenderer = new TextRenderer("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);
-    
+    textRenderer = new TextRenderer("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);    
+
+    levelManager = new LevelManager(*box2dRenderer, *gameScene, *m_World);
+	levelManager->ReadLevel("Resources/Levels/1.level");
+    levelManager->BuildLevel(*renderer, glm::vec2(m_Width / 3, m_Height / 3));
 }
 
 Game::~Game()
@@ -71,12 +80,15 @@ Game::~Game()
     }    
     delete(gameScene);
     delete(box2dRenderer);
+	delete(levelManager);
 }
 
 void Game::OnUpdate(float deltaTime)
 {	
-    for (auto gameObject : gameScene->GetGameObjects())
+    auto gameObjs = gameScene->GetGameObjects();
+    for (auto gameObject : gameObjs)
     {
+        if (gameObject == nullptr) continue;
         gameObject->OnUpdate(deltaTime);
     }
 

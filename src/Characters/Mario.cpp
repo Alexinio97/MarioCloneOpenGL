@@ -24,7 +24,9 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 	);
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.gravityScale = 100.0f;
+	bodyDef.fixedRotation = true;
 	m_Body = world.CreateBody(&bodyDef);	
+	
 	b2FixtureDef marioFixtureDef;
 	m_BodyShape = new b2PolygonShape();
 
@@ -36,7 +38,7 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 	);
 	marioFixtureDef.shape = m_BodyShape;
 	marioFixtureDef.friction = 1.0f;
-	marioFixtureDef.density = 1.0f;
+	marioFixtureDef.density = 1.0f;	
 
 	m_Body->CreateFixture(&marioFixtureDef);
 	scene.RegisterGameObject(*this);

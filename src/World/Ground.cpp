@@ -2,8 +2,8 @@
 #include <box2d/b2_fixture.h>
 #include "includes/Core/Box2DRenderer.h"
 
-Ground::Ground(glm::vec2 position, glm::vec2 size, int numTiles, Texture2D& texture, b2World& world, GameScene& scene, Box2DRenderer& box2DRenderer)
-	: m_Texture(&texture), m_NumTiles(numTiles), m_Box2DRenderer(&box2DRenderer)
+Ground::Ground(glm::vec2 position, glm::vec2 size, Texture2D& texture, b2World& world, GameScene& scene, Box2DRenderer& box2DRenderer)
+	: m_Texture(&texture), m_Box2DRenderer(&box2DRenderer)
 {
 	m_Position = position;
 	m_Size = size;	
@@ -11,16 +11,14 @@ Ground::Ground(glm::vec2 position, glm::vec2 size, int numTiles, Texture2D& text
 	b2BodyDef bodyDef;
 	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
 	bodyDef.position.Set(
-		m_Position.x + (m_Size.x * m_NumTiles) / 2.0f,
+		m_Position.x + m_Size.x / 2.0f,
 		m_Position.y + m_Size.y / 2.0f
 	);
 	m_Body = world.CreateBody(&bodyDef);
 	b2FixtureDef fixtureDef;
 	m_Shape = new b2PolygonShape();
-
-	float halfWidth = (m_Size.x * m_NumTiles) / 2.0f;
-	float halfHeight = m_Size.y / 2.0f;               
-	m_Shape->SetAsBox(halfWidth, halfHeight);
+	       
+	m_Shape->SetAsBox(m_Size.x / 2.0f, m_Size.y / 2.0f);
 	fixtureDef.shape = m_Shape;
 		
 	m_Body->CreateFixture(&fixtureDef);
@@ -45,9 +43,5 @@ void Ground::OnRender(float deltTime, Renderer& renderer)
 	}
 
 	m_Box2DRenderer->DrawPolygon(transformedVertices.data(), m_Shape->m_count, b2Color(1, 1, 1));
-	for (int i = 0; i < m_NumTiles; i++)
-	{		
-		glm::vec2 pos = glm::vec2(m_Position.x + (i * m_Size.x), m_Position.y);
-		renderer.RenderSprite(*m_Texture, pos, m_Size, 0, m_Texture->GetWidth(), m_Texture->GetHeight());
-	}
+	renderer.RenderSprite(*m_Texture, m_Position, m_Size, 0, m_Texture->GetWidth(), m_Texture->GetHeight());	
 }

@@ -22,14 +22,14 @@ set(SOURCES
     "src/ResourceManager.cpp"
     "src/Shader.cpp"
     "src/glad.c"
-    "src/Characters/Mushroom.cpp"
+    "src/Characters/Owl.cpp"
     "src/Core/Texture.cpp"
     "src/Core/Renderer.cpp"
     "src/Core/TextRenderer.cpp"
     "src/Input/Input.cpp"
     "src/Core/GameScene.cpp"
     "src/Core/Box2DRenderer.cpp"
- )
+  "src/World/LevelManager.cpp")
 
 set (HEADERS
     "includes/Game.h"
@@ -39,13 +39,13 @@ set (HEADERS
     "includes/Characters/Mario.h"
     "includes/ResourceManager.h"
     "includes/Shader.h"
-    "includes/Characters/Mushroom.h"
+    "includes/Characters/Owl.h"
     "includes/Core/Texture.h"
     "includes/Core/Renderer.h"
     "includes/Input/Input.h"
     "includes/Core/GameScene.h"
     "includes/Core/TextRenderer.h" 
-    "includes/Core/Box2DRenderer.h")
+    "includes/Core/Box2DRenderer.h" "includes/World/LevelManager.h")
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS} 
@@ -57,10 +57,12 @@ set(RESOURCE_FILES
     Resources/Shaders/text.vert.glsl
     Resources/Shaders/text.frag.glsl
     Resources/Textures/Characters/mario.png
-    Resources/Textures/Characters/mushroom.png
+    Resources/Textures/Characters/owl.png
     Resources/Textures/Characters/ballTexture.png
+    Resources/Textures/Characters/enemies.png
     Resources/Textures/World/Ground.png
     Resources/Fonts/elsie/Elsie-Regular.otf
+    Resources/Levels/1.level
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 

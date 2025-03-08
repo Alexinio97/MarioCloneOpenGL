@@ -6,6 +6,9 @@
 Renderer::Renderer(Shader& shader)
     : m_VAO(0), m_VBO(0), m_EBO(0), m_Shader(shader)
 {   
+    glGenVertexArrays(1, &m_VAO);
+    glGenBuffers(1, &m_VBO);
+    glGenBuffers(1, &m_EBO);
 }
 
 Renderer::~Renderer()
@@ -90,11 +93,7 @@ void Renderer::RenderSprite(const Texture2D& texture, glm::vec2 position, glm::v
     unsigned int indices[] = {
         0,2,1,
         0,1,3
-    };
-
-    glGenVertexArrays(1, &m_VAO);
-    glGenBuffers(1, &m_VBO);
-    glGenBuffers(1, &m_EBO);
+    };    
 
     glBindVertexArray(m_VAO);
 
@@ -115,7 +114,7 @@ void Renderer::RenderSprite(const Texture2D& texture, glm::vec2 position, glm::v
 
     model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));  // when z = 40.0f, it is far outside the visible range of [-1.0f, 1.0f] texture was not displaying
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    
-    model = glm::scale(model, glm::vec3(size, 0.0f));
+    model = glm::scale(model, glm::vec3(size.x, size.y, 0.0f));
     m_Shader.SetMatrix4("model", model);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.GetTextureId());

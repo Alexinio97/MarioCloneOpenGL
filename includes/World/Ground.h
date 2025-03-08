@@ -9,16 +9,16 @@
 
 #pragma once
 
-class Ground : GameObject {
+class Ground : public GameObject {
 public:
-	Ground(glm::vec2 position, glm::vec2 size, int numTiles, Texture2D& texture, b2World& world, GameScene& scene, Box2DRenderer& box2DRenderer);
+	Ground(glm::vec2 position, glm::vec2 size, Texture2D& texture, b2World& world, GameScene& scene, Box2DRenderer& box2DRenderer);
 
 	// Inherited via GameObject
 	void OnUpdate(float deltaTime) override;
 	void OnRender(float deltTime, Renderer& renderer) override;
-
+	
+	inline void SetPosition(glm::vec2 position) { m_Position = position; }	
 private:
-	int m_NumTiles;
 	b2PolygonShape* m_Shape;
 	b2Body* m_Body;
 	Texture2D* m_Texture;
