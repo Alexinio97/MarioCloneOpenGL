@@ -10,6 +10,6 @@ uniform mat4 model; // Model matrix for Rotation, Translation and scaling
 uniform mat4 view;
 
 void main(){
-    gl_Position = projection * model  * vec4(positionTexture.xy, 1.0, 1.0);
+    gl_Position = projection  * view * model   * vec4(positionTexture.xy, 1.0, 1.0);
     TexCoord = positionTexture.zw;            
 }

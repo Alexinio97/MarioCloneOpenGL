@@ -5,7 +5,7 @@
 #include <includes/Core/GameScene.h>
 #include "includes/Core/Renderer.h"
 #include <includes/Core/Box2DRenderer.h>
-
+ 
 class Owl : public GameObject
 {
 public:
@@ -20,6 +20,8 @@ public:
 	void Movement(float deltaTime);
 
 	void Animation(float deltaTime);
+
+	void Die();
 
 private:
 	Texture2D m_Texture;

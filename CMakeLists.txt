@@ -29,7 +29,7 @@ set(SOURCES
     "src/Input/Input.cpp"
     "src/Core/GameScene.cpp"
     "src/Core/Box2DRenderer.cpp"
-  "src/World/LevelManager.cpp")
+    "src/World/LevelManager.cpp" "src/Input/Camera.cpp" "src/Core/EnemyManager.cpp" "src/Collision/CharacterContactListener.cpp")
 
 set (HEADERS
     "includes/Game.h"
@@ -45,17 +45,19 @@ set (HEADERS
     "includes/Input/Input.h"
     "includes/Core/GameScene.h"
     "includes/Core/TextRenderer.h" 
-    "includes/Core/Box2DRenderer.h" "includes/World/LevelManager.h")
+    "includes/Core/Box2DRenderer.h" "includes/World/LevelManager.h" "includes/Input/Camera.h" "includes/Core/EnemyManager.h" "includes/Collision/CharacterContactListener.h")
 
 add_executable(MarioCloneGL 
     ${SOURCES} ${HEADERS} 
-)
+ "src/Input/Camera.cpp" "includes/Core/EnemyManager.h" "src/Core/EnemyManager.cpp" "includes/Collision/CharacterContactListener.h" "src/Collision/CharacterContactListener.cpp")
 
 set(RESOURCE_FILES
     Resources/Shaders/sprite.frag.glsl
     Resources/Shaders/sprite.vert.glsl
     Resources/Shaders/text.vert.glsl
     Resources/Shaders/text.frag.glsl
+    Resources/Shaders/camera.vert.glsl
+    Resources/Shaders/camera.frag.glsl
     Resources/Textures/Characters/mario.png
     Resources/Textures/Characters/owl.png
     Resources/Textures/Characters/ballTexture.png

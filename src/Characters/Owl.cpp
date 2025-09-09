@@ -8,6 +8,8 @@ Owl::Owl(Texture2D& texture, glm::vec2 position, glm::vec2 size, b2World& world,
 	: m_Texture(texture), m_Position(position), m_Size(size), m_IsDead(false), m_IsMoving(true), m_Velocity(60.0f), m_PatrolRange(100.0f), m_PatorlUnit(0.0f), m_IsRight(true), m_AnimTimer(0.0f), m_AnimIndex(0)
 {
 	scene.RegisterGameObject(*this);
+	m_Name = "Owl";
+	m_Tag = "Enemy";
 	m_Box2dRenderer = &box2dRenderer;
 
 	b2BodyDef bodyDef;
@@ -37,6 +39,7 @@ Owl::Owl(Texture2D& texture, glm::vec2 position, glm::vec2 size, b2World& world,
 	owlFixtureDef.density = 1.0f;
 
 	m_Body->CreateFixture(&owlFixtureDef);
+	m_Body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 }
 
 Owl::~Owl()
@@ -106,4 +109,14 @@ void Owl::Animation(float deltaTime)
 	{
 		m_AnimIndex = 2;
 	}
+}
+
+void Owl::Die()
+{
+	m_IsDead = true;
+	m_Body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+	m_Body->SetGravityScale(0.0f);
+	m_Body->SetType(b2_staticBody);
+	m_Body->SetTransform(m_Body->GetPosition(), 0.0f);
+	m_BodyShape->SetAsBox(m_Size.x / 2.0f, m_Size.y / 2.0f - 5.0f, b2Vec2(m_Size.x / 2.0f, m_Size.y / 2.0f), 0);
 }

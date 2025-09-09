@@ -9,9 +9,11 @@
 #include <iostream>
 
 Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlipped, AnimState animationState, b2World& world, GameScene& scene, Box2DRenderer& box2dRenderer)
-	: m_Texture(texture), m_IsFlipped(isFlipped), m_AnimationState(animationState), m_Scene(&scene), m_Box2dRenderer(&box2dRenderer), m_IsRight(true), m_AnimIndex(0), m_AnimTimer(0.0f), m_AnimSpeed(0.1f)
+	: m_Texture(texture), m_IsFlipped(isFlipped), m_AnimationState(animationState), m_Scene(&scene), m_Box2dRenderer(&box2dRenderer), m_IsRight(true), m_AnimIndex(0), m_AnimTimer(0.0f), m_AnimSpeed(0.1f)	
 {
 	m_Position = position;
+	m_Name = "Mario";
+	m_Tag = "Player";
 	m_Size = size;
 	m_Speed = 1000.0f;
 	m_IsDead = false;
@@ -23,7 +25,7 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 		m_Position.y
 	);
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.gravityScale = 100.0f;
+	bodyDef.gravityScale = 100.0f;	
 	bodyDef.fixedRotation = true;
 	m_Body = world.CreateBody(&bodyDef);	
 	
@@ -41,6 +43,7 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 	marioFixtureDef.density = 1.0f;	
 
 	m_Body->CreateFixture(&marioFixtureDef);
+	m_Body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 	scene.RegisterGameObject(*this);
 }
 
@@ -70,10 +73,11 @@ void Mario::OnUpdate(float deltaTime)
 		vel.x = m_Speed;
 	}
 
-	if (Input::GetKey(GLFW_KEY_SPACE))
+	if (Input::GetKey(GLFW_KEY_SPACE) && m_AnimationState != AnimState::Jumping)
 	{
 		m_AnimationState = AnimState::Jumping;
-		vel.y = 90;
+		m_Body->ApplyLinearImpulse(b2Vec2(0, 10.0f), m_Body->GetWorldCenter(), true);
+		std::cout << "Y value: " << m_Body->GetPosition().y << std::endl;		
 	}	
 
 	m_Body->SetLinearVelocity(vel);
@@ -109,6 +113,11 @@ void Mario::OnRender(float deltaTime, Renderer& renderer)
 	}
 		
 	renderer.RenderSprite(m_Texture, renderPos, glm::vec2(m_Size.x * flipX, m_Size.y), m_AnimIndex, 200, 200);
+}
+
+void Mario::OnCollisionEnter(GameObject& other)
+{
+	std::cout << "Collided with: " << other.GetName() << std::endl;
 }
 
 void Mario::SetAnimState()

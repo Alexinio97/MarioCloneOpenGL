@@ -10,6 +10,7 @@ Box2DRenderer::Box2DRenderer(Shader& shader)
 
 void Box2DRenderer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
+    //return;
     std::vector<glm::vec2> glVertices(vertexCount);
     for (int i = 0; i < vertexCount; ++i)
     {

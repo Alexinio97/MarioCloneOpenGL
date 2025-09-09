@@ -20,7 +20,8 @@ public:
 	~Mario();
 	
 	void OnUpdate(float deltaTime) override;
-	void OnRender(float deltaTime, Renderer& renderer) override;	
+	void OnRender(float deltaTime, Renderer& renderer) override;
+	void OnCollisionEnter(GameObject& other) override;
 
 private:
 	void SetAnimState();

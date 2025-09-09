@@ -4,30 +4,31 @@
 #include "includes/Game.h"
 #include "includes/Shader.h"
 #include "includes/ResourceManager.h"
-#include "includes/Core/TextRenderer.h"
 #include <iostream>
 #include <filesystem>
 #include "includes/Input/Input.h"
 #include <GLFW/glfw3.h>
-#include "includes/Core/GameScene.h"
-#include "includes/Core/Renderer.h"
-#include "includes/World/Ground.h"
-#include "includes/Core/Box2DRenderer.h"
-#include "includes/Characters/Owl.h"
-#include <includes/World/LevelManager.h>
 
-Renderer* renderer;
-TextRenderer* textRenderer;
-GameScene* gameScene;
-Box2DRenderer* box2dRenderer;
-LevelManager* levelManager;
- 
 Game::Game(int width, int height, Logger& logger)
     : m_GameLogger(&logger), m_Width(width), m_Height(height)
-{	
-    m_World = new b2World(b2Vec2(0, -5));
-    gameScene = new GameScene();    
+{	    
+    LoadResources();
+    InitializeCoreComponents();
+      
+    m_Player = std::make_unique<Mario>(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *m_GameScene, *m_Box2dRenderer);
+    
+    m_Camera = std::make_unique<Camera>(*m_Player, ResourceManager::GetShader("default"), (float)m_Width, (float)m_Height);    
 
+	m_EnemyManger->InitializeEnemies(*m_World, *m_GameScene, 5, glm::vec2((m_Width / 2) + 50, m_Height / 2), glm::vec2(70.0f, 70.0f), 150.0f);
+
+    m_LevelManager = std::make_unique<LevelManager>(*m_Box2dRenderer, *m_GameScene, *m_World);
+    m_LevelManager->ReadLevel("Resources/Levels/1.level");
+    m_LevelManager->BuildLevel(*m_Renderer, glm::vec2(0, m_Height / 3));
+	m_World->SetContactListener(m_ContactListener.get());
+}
+
+void Game::LoadResources()
+{
     ResourceManager::LoadShader("Resources/Shaders/sprite.vert.glsl",
         "Resources/Shaders/sprite.frag.glsl",
         "default");
@@ -39,66 +40,59 @@ Game::Game(int width, int height, Logger& logger)
     // Load Textures
     ResourceManager::LoadTexture("Resources/Textures/Characters/mario.png", "mario");
     ResourceManager::LoadTexture("Resources/Textures/World/ground.png", "ground");
-	ResourceManager::LoadTexture("Resources/Textures/Characters/owl.png", "owl");
+    ResourceManager::LoadTexture("Resources/Textures/Characters/owl.png", "owl");
+}
 
+void Game::InitializeCoreComponents()
+{
     Shader& shader = ResourceManager::GetShader("default");
     Shader& box2dShader = ResourceManager::GetShader("box-debug");
-    box2dRenderer = new Box2DRenderer(box2dShader);
     shader.Use();
     shader.SetInteger("ourTexture", 0);
 
     Shader& textShader = ResourceManager::GetShader("text");
-    textShader.Use();    
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
+    textShader.Use();
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(m_Width), 0.0f, static_cast<float>(m_Height), -1.0f, 1.0f);
     textShader.SetMatrix4("projection", projection);
     box2dShader.SetMatrix4("projection", projection);
     box2dShader.SetVector3("color", glm::vec3(1.0f, 0.0f, 0.0f));
 
-    glm::mat4 viewMatrix = glm::mat4(1);
     ResourceManager::GetShader("default").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("default").SetMatrix4("view", viewMatrix);
-    m_Player = new Mario(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *gameScene, *box2dRenderer);
 
-	auto mushroom = new Owl(ResourceManager::GetTexture("owl"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70, 70.0f), *m_World, *gameScene, *box2dRenderer);    
-    renderer = new Renderer(shader);
-    textRenderer = new TextRenderer("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);    
-
-    levelManager = new LevelManager(*box2dRenderer, *gameScene, *m_World);
-	levelManager->ReadLevel("Resources/Levels/1.level");
-    levelManager->BuildLevel(*renderer, glm::vec2(m_Width / 3, m_Height / 3));
+    m_World = std::make_unique<b2World>(b2Vec2(0, -5));
+    m_GameScene = std::make_unique<GameScene>();
+    m_Renderer = std::make_unique<Renderer>(shader);
+    m_TextRenderer = std::make_unique<TextRenderer>("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);
+    m_Box2dRenderer = std::make_unique<Box2DRenderer>(box2dShader);
+    m_EnemyManger = std::make_unique<EnemyManager>(*m_Box2dRenderer);
+	m_ContactListener = std::make_unique<CharacterContactListener>();
 }
 
 Game::~Game()
 {  
-    delete(renderer);
-    delete(textRenderer);    
-    delete(m_World);
-
-    for (auto gameObject : gameScene->GetGameObjects())
+    for (auto gameObject : m_GameScene->GetGameObjects())
     {
-		gameScene->UnregisterGameObject(*gameObject);
-    }    
-    delete(gameScene);
-    delete(box2dRenderer);
-	delete(levelManager);
+		m_GameScene->UnregisterGameObject(*gameObject);
+    }                	
 }
 
 void Game::OnUpdate(float deltaTime)
-{	
-    auto gameObjs = gameScene->GetGameObjects();
+{	    
+    auto &gameObjs = m_GameScene->GetGameObjects();
     for (auto gameObject : gameObjs)
     {
         if (gameObject == nullptr) continue;
         gameObject->OnUpdate(deltaTime);
-    }
-
+    }	
+    m_Camera->Update(deltaTime);
+    
     m_World->Step(deltaTime, 8, 3);
 }
 
 void Game::OnRender(float deltaTime)
 {    
-    for(auto gameObject : gameScene->GetGameObjects())
+    for(auto gameObject : m_GameScene->GetGameObjects())
 	{        
-		gameObject->OnRender(deltaTime, *renderer);        
+		gameObject->OnRender(deltaTime, *m_Renderer);        
 	}
 }

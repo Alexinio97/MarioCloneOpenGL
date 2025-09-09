@@ -6,7 +6,8 @@ Ground::Ground(glm::vec2 position, glm::vec2 size, Texture2D& texture, b2World& 
 	: m_Texture(&texture), m_Box2DRenderer(&box2DRenderer)
 {
 	m_Position = position;
-	m_Size = size;	
+	m_Size = size;
+	m_Name = "Ground";
 
 	b2BodyDef bodyDef;
 	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
@@ -34,14 +35,17 @@ void Ground::OnUpdate(float deltaTime)
 void Ground::OnRender(float deltTime, Renderer& renderer)
 {	
 	const b2Transform& transform = m_Body->GetTransform(); // Get the body's transform	
-
+	
 	std::vector<b2Vec2> transformedVertices(m_Shape->m_count);
+
+	// Transform each local vertex of the shape to world coordinates using the body's transform
 	for (int i = 0; i < m_Shape->m_count; ++i)
 	{
-		const b2Vec2& localVertex = m_Shape->m_vertices[i];
-		transformedVertices[i] = b2Mul(transform, localVertex);		
+		const b2Vec2& localVertex = m_Shape->m_vertices[i]; // Local (body-relative) vertex
+		transformedVertices[i] = b2Mul(transform, localVertex); // Convert to world-space
 	}
-
+	
 	m_Box2DRenderer->DrawPolygon(transformedVertices.data(), m_Shape->m_count, b2Color(1, 1, 1));
+	
 	renderer.RenderSprite(*m_Texture, m_Position, m_Size, 0, m_Texture->GetWidth(), m_Texture->GetHeight());	
 }
