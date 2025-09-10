@@ -110,12 +110,12 @@ void Renderer::RenderSprite(const Texture2D& texture, glm::vec2 position, glm::v
     m_Shader.SetInteger("ourTexture", 0);
     
     // Bind texture and render
-    glm::mat4 model = glm::mat4(1.0f);
+    m_Model = glm::mat4(1.0f);
 
-    model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));  // when z = 40.0f, it is far outside the visible range of [-1.0f, 1.0f] texture was not displaying
-    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));    
-    model = glm::scale(model, glm::vec3(size.x, size.y, 0.0f));
-    m_Shader.SetMatrix4("model", model);
+    m_Model = glm::translate(m_Model, glm::vec3(position.x, position.y, 0.0f));  // when z = 40.0f, it is far outside the visible range of [-1.0f, 1.0f] texture was not displaying
+    m_Model = glm::rotate(m_Model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    m_Model = glm::scale(m_Model, glm::vec3(size.x, size.y, 0.0f));
+    m_Shader.SetMatrix4("model", m_Model);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.GetTextureId());
     

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <box2d/b2_draw.h>
+#include <memory>
 #include <includes/Shader.h>
+#include <includes/Input/Camera.h>
 
 class Box2DRenderer : public b2Draw
 {
@@ -16,6 +18,9 @@ public:
 	void DrawTransform(const b2Transform& xf) override;
 	void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override;
 
+	inline Shader* GetShader() const { return m_Shader; }
+
 private:
 	Shader* m_Shader;
+	std::unique_ptr<Camera> m_Camera;
 };

@@ -1,12 +1,13 @@
-#include "includes/Characters/Mario.h"
-#include "includes/Core/Renderer.h"
 #include <glad/glad.h>
-#include <includes/Input/Input.h>
 #include <GLFW/glfw3.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_draw.h>
 #include <iostream>
+#include <includes/Input/Input.h>
+#include "includes/Characters/Mario.h"
+#include "includes/Core/Renderer.h"
+#include "includes/Core/Box2DRenderer.h"
 
 Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlipped, AnimState animationState, b2World& world, GameScene& scene, Box2DRenderer& box2dRenderer)
 	: m_Texture(texture), m_IsFlipped(isFlipped), m_AnimationState(animationState), m_Scene(&scene), m_Box2dRenderer(&box2dRenderer), m_IsRight(true), m_AnimIndex(0), m_AnimTimer(0.0f), m_AnimSpeed(0.1f)	
@@ -17,6 +18,7 @@ Mario::Mario(Texture2D& texture, glm::vec2 position, glm::vec2 size, bool isFlip
 	m_Size = size;
 	m_Speed = 1000.0f;
 	m_IsDead = false;
+	m_Velocity = { 2.0f, 2.0f };
 
 	b2BodyDef bodyDef;
 	bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(this);
@@ -51,7 +53,6 @@ Mario::~Mario()
 {	
 }
 
-// deltaTime is useful for physics-based acceleration (+=), but for constant speed, it's unnecessary.
 void Mario::OnUpdate(float deltaTime)
 {
 	m_Position = { m_Body->GetPosition().x, m_Body->GetPosition().y };
@@ -73,11 +74,9 @@ void Mario::OnUpdate(float deltaTime)
 		vel.x = m_Speed;
 	}
 
-	if (Input::GetKey(GLFW_KEY_SPACE) && m_AnimationState != AnimState::Jumping)
+	if (Input::GetKeyDown(GLFW_KEY_SPACE))
 	{
-		m_AnimationState = AnimState::Jumping;
-		m_Body->ApplyLinearImpulse(b2Vec2(0, 10.0f), m_Body->GetWorldCenter(), true);
-		std::cout << "Y value: " << m_Body->GetPosition().y << std::endl;		
+		Jump(deltaTime);
 	}	
 
 	m_Body->SetLinearVelocity(vel);
@@ -100,9 +99,7 @@ void Mario::OnRender(float deltaTime, Renderer& renderer)
 		auto localVertex = m_BodyShape->m_vertices[i];
 		transformedVertices[i] = b2Mul(bodyTransform, localVertex); // convert to world space coordinates
 	}
-
-	m_Box2dRenderer->DrawPolygon(transformedVertices.data(), m_BodyShape->m_count, b2Color(1.0f, 0.0f, 0.0f));
-
+	
 	// Flip sprite without shifting its position
 	glm::vec2 renderPos = m_Position;
 	float flipX = m_IsRight ? 1.0f : -1.0f;
@@ -110,14 +107,19 @@ void Mario::OnRender(float deltaTime, Renderer& renderer)
 	if (!m_IsRight) // Shift position to compensate for mirroring
 	{
 		renderPos.x += m_Size.x;
-	}
-		
+	}		
+	m_Box2dRenderer->DrawPolygon(transformedVertices.data(), m_BodyShape->m_count, b2Color(0.0f, 1.0f, 0.0f));
+			
 	renderer.RenderSprite(m_Texture, renderPos, glm::vec2(m_Size.x * flipX, m_Size.y), m_AnimIndex, 200, 200);
 }
 
 void Mario::OnCollisionEnter(GameObject& other)
 {
 	std::cout << "Collided with: " << other.GetName() << std::endl;
+	if (other.GetTag() == "Enemy")
+	{
+		IsPlayerOnTop(other);
+	}
 }
 
 void Mario::SetAnimState()
@@ -138,4 +140,31 @@ void Mario::SetAnimState()
 		m_AnimIndex = 0;  // Idle sprite
 		break;
 	}
+}
+
+void Mario::IsPlayerOnTop(GameObject& other)
+{
+	if (m_Body->GetPosition().y > other.GetPosition().y + other.GetSize().y)
+	{
+		std::cout << "Player is on top of enemy!" << std::endl;
+		m_Body->ApplyLinearImpulse(b2Vec2(0, 5.0f), m_Body->GetWorldCenter(), true);
+		m_Scene->UnregisterGameObject(other);
+	}
+	else
+	{
+		std::cout << "Player hit from the side or bottom!" << std::endl;
+		m_IsDead = true;
+	}
+}
+
+void Mario::Jump(float deltaTime)
+{
+	std::cout << "Jump!" << std::endl;
+	std::cout << "Position before jump: " << m_Body->GetPosition().x << ", " << m_Body->GetPosition().y << std::endl;
+	b2Vec2 vel = m_Body->GetLinearVelocity();
+	vel.y = 15.0f; // Set a fixed upward velocity for the jump
+	m_Body->SetLinearVelocity(vel);
+
+	std::cout << "Position after jump: " << m_Body->GetPosition().x << ", " << m_Body->GetPosition().y << std::endl;
+	m_AnimationState = AnimState::Idle;
 }

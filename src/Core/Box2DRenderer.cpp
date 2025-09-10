@@ -3,14 +3,14 @@
 #include <vector>
 
 
+
 Box2DRenderer::Box2DRenderer(Shader& shader)
-    : m_Shader(&shader)
+	: m_Shader(&shader)
 {
 }
 
 void Box2DRenderer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
-{
-    //return;
+{    
     std::vector<glm::vec2> glVertices(vertexCount);
     for (int i = 0; i < vertexCount; ++i)
     {
@@ -18,7 +18,12 @@ void Box2DRenderer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const
     }
 
     m_Shader->Use();
-    // TODO: add color to shader here
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	m_Shader->SetMatrix4("model", model);
+	m_Shader->SetVector3("u_color", glm::vec3(color.r, color.g, color.b));
 
     GLuint vao, vbo;
     

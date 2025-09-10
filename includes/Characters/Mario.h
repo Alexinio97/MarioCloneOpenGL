@@ -5,13 +5,15 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_world.h>
 #include "includes/Core/GameScene.h"
-#include "includes/Core/Box2DRenderer.h"
 
 enum AnimState {
 	Idle,
 	Running,
 	Jumping
 };
+
+// forward declarations
+class Box2DRenderer;
 
 class Mario : public GameObject
 {
@@ -25,6 +27,8 @@ public:
 
 private:
 	void SetAnimState();
+	void IsPlayerOnTop(GameObject& other);
+	void Jump(float deltaTime);
 
 private:
 	b2Body* m_Body;
@@ -33,6 +37,7 @@ private:
 	GameScene* m_Scene;
 	Box2DRenderer* m_Box2dRenderer;
 	b2PolygonShape* m_BodyShape;
+	glm::vec2 m_Velocity;
 	bool m_IsFlipped;
 	float m_Speed;
 	bool m_IsDead;

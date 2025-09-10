@@ -158,6 +158,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	else if (action == GLFW_RELEASE && Input::Keys[key])
 	{
 		Input::Keys[key] = false;
+		Input::KeysUp[key] = false;
 	}
 
 }

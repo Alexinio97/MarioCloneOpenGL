@@ -1,11 +1,13 @@
-#include <memory>
+#pragma once
 
-#include "includes/Characters/Mario.h"
+#include "includes/Shader.h"
+// forward declarations
+class Mario;
 
 class Camera {
 
 public:
-	Camera(Mario& Mario, Shader& Shader, float ScreenWidth, float ScreenHeight);
+	Camera(Mario& Mario, Shader& DefaultShader, Shader& DebugShader, float ScreenWidth, float ScreenHeight);
 
 	void Update(float deltaTime);	
 
@@ -16,7 +18,8 @@ private:
 
 private:
 	Mario& m_Mario;
-	Shader& m_Shader;
+	Shader& m_DefaultShader;
+	std::unique_ptr<Shader> m_DebugShader;
 	glm::mat4 m_ViewMatrix;
 	glm::vec2 m_Position;
 	float m_ScreenWidth;

@@ -13,13 +13,9 @@ Game::Game(int width, int height, Logger& logger)
     : m_GameLogger(&logger), m_Width(width), m_Height(height)
 {	    
     LoadResources();
-    InitializeCoreComponents();
-      
-    m_Player = std::make_unique<Mario>(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f,70.0f), false, AnimState::Idle, *m_World, *m_GameScene, *m_Box2dRenderer);
-    
-    m_Camera = std::make_unique<Camera>(*m_Player, ResourceManager::GetShader("default"), (float)m_Width, (float)m_Height);    
+    InitializeCoreComponents();         
 
-	m_EnemyManger->InitializeEnemies(*m_World, *m_GameScene, 5, glm::vec2((m_Width / 2) + 50, m_Height / 2), glm::vec2(70.0f, 70.0f), 150.0f);
+	m_EnemyManger->InitializeEnemies(*m_World, *m_GameScene, 5, glm::vec2((m_Width / 2) + 80, m_Height / 2), glm::vec2(70.0f, 70.0f), 150.0f);
 
     m_LevelManager = std::make_unique<LevelManager>(*m_Box2dRenderer, *m_GameScene, *m_World);
     m_LevelManager->ReadLevel("Resources/Levels/1.level");
@@ -54,8 +50,7 @@ void Game::InitializeCoreComponents()
     textShader.Use();
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(m_Width), 0.0f, static_cast<float>(m_Height), -1.0f, 1.0f);
     textShader.SetMatrix4("projection", projection);
-    box2dShader.SetMatrix4("projection", projection);
-    box2dShader.SetVector3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+    box2dShader.SetMatrix4("projection", projection);    
 
     ResourceManager::GetShader("default").SetMatrix4("projection", projection);
 
@@ -64,6 +59,8 @@ void Game::InitializeCoreComponents()
     m_Renderer = std::make_unique<Renderer>(shader);
     m_TextRenderer = std::make_unique<TextRenderer>("Resources/Fonts/elsie/Elsie-Regular.otf", 48, textShader);
     m_Box2dRenderer = std::make_unique<Box2DRenderer>(box2dShader);
+    m_Player = std::make_unique<Mario>(ResourceManager::GetTexture("mario"), glm::vec2(m_Width / 2, m_Height / 2), glm::vec2(70.0f, 70.0f), false, AnimState::Idle, *m_World, *m_GameScene, *m_Box2dRenderer);
+    m_Camera = std::make_unique<Camera>(*m_Player, ResourceManager::GetShader("default"), box2dShader, (float)m_Width, (float)m_Height);    
     m_EnemyManger = std::make_unique<EnemyManager>(*m_Box2dRenderer);
 	m_ContactListener = std::make_unique<CharacterContactListener>();
 }
