@@ -18,11 +18,6 @@ void Box2DRenderer::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const
     }
 
     m_Shader->Use();
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-	m_Shader->SetMatrix4("model", model);
 	m_Shader->SetVector3("u_color", glm::vec3(color.r, color.g, color.b));
 
     GLuint vao, vbo;
